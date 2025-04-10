@@ -1,103 +1,71 @@
-# PromptHub
-一个基于 Cloudflare 的个人提示词管理网站，简单高效地存储、搜索和复制 AI 提示词。
+单用户版提示词网站功能，依然基于 Cloudflare 部署。用Cloudflare Pages部署前端， Workers部署后端，KV存储数据。
 
-## 项目介绍
 
-PromptHub 是一个轻量级的个人提示词管理工具，使用 Cloudflare Workers 和 KV 存储构建，无需传统服务器即可部署和运行。它提供了以下功能：
 
-- ✨ 创建和存储提示词，支持标题、内容和标签
-- 🔍 快速搜索提示词内容和标签
-- 🏷️ 通过标签分类和过滤提示词
-- 📋 一键复制提示词内容到剪贴板
-- 📱 响应式设计，在各种设备上都能良好工作
+### 功能设计（单用户版）
 
-## 技术栈
+#### 1. 核心功能
+- **提示词管理**
+  - 主页显示所有提示词列表，按添加时间或自定义排序（例如按类别）。
+  - 搜索框支持关键词快速查找提示词。
+  - 分类筛选（例如“图像生成”、“文本生成”），通过标签实现。
 
-- 前端：HTML, CSS, JavaScript (原生)
-- 后端：Cloudflare Workers
-- 数据存储：Cloudflare KV
-- 部署：Cloudflare Pages
+- **提示词详情**
+  - 点击提示词查看完整内容。
+  - 显示提示词、描述、适用AI工具等信息。
+  - “复制”按钮，一键复制提示词。
+  - 可编辑提示词内容并保存。
 
-## 安装与部署
+- **添加提示词**
+  - 简单表单：输入标题、提示词内容、描述、标签。
+  - 点击“保存”后立即添加到列表。
 
-### 前提条件
+- **删除功能**
+  - 每个提示词旁边有“删除”按钮，点击后移除。
 
-- [Node.js](https://nodejs.org/) (v16 或更高版本)
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/get-started/) (Cloudflare Workers 命令行工具)
-- Cloudflare 账号
+#### 2. 数据展示与操作
+- **本地预览**
+  - 添加后无需刷新页面，实时更新列表。
+- **分类统计**
+  - 主页顶部显示提示词总数和各分类数量（可选）。
 
-### 部署步骤
+#### 3. 用户体验优化
+- **简洁界面**
+  - 单页应用，左侧列表，右侧详情/编辑区域。
+  - 手机和桌面端自适应。
+- **快捷操作**
+  - 支持键盘快捷键（如 Ctrl+S 保存，Ctrl+F 搜索）。
+- **数据持久化**
+  - 数据保存到 Cloudflare KV 
 
-1. 克隆仓库
-   ```bash
-   git clone https://github.com/yourusername/prompthub.git
-   cd prompthub
-   ```
+#### 4. 技术实现（基于 Cloudflare）
+- **前端**
+  - 使用 Cloudflare Pages 部署静态页面。
+  - 推荐框架：React 或 Vue.js（单文件组件即可）。
+- **后端（可选）**
+  - 如果需要云端保存，使用 Cloudflare Workers + KV 存储。
+    - KV 键值对示例：`prompt_1: {title: "xx", content: "yy"}`。
+ 
+- **部署**
+  - Pages 托管前端，Workers（可选）处理数据保存。
+- **数据备份**
+  - 提供“导出”按钮，将所有提示词保存为 JSON 文件。
+  - 支持“导入”功能，上传 JSON 文件恢复数据。
 
-2. 安装依赖
-   ```bash
-   npm install -g wrangler
-   ```
 
-3. 登录到你的 Cloudflare 账号
-   ```bash
-   wrangler login
-   ```
+### 技术实现步骤
+1. **前端开发**
+   - 用 React/Vue 搭建一个单页应用。
+   - 核心组件：
+     - `PromptList`：显示提示词列表。
+     - `PromptForm`：添加/编辑提示词。
+     - `SearchBar`：搜索过滤。
+2. **数据存储**
+   - **选项1：Cloudflare KV**
+     - Workers API：`PUT /api/prompts` 保存，`GET /api/prompts` 获取。
+     - 前端调用 API 读写数据。
+3. **部署**
+   - 用 Cloudflare Pages 部署前端。
+   - 若用 KV，配置 Workers 并绑定 KV 命名空间。
 
-4. 创建 KV 命名空间
-   ```bash
-   wrangler kv:namespace create "PROMPTS_KV"
-   wrangler kv:namespace create "PROMPTS_KV" --preview
-   ```
 
-5. 更新 `wrangler.toml` 文件，替换 KV 命名空间 ID
-   ```toml
-   kv_namespaces = [
-     { binding = "PROMPTS_KV", id = "你的KV命名空间ID", preview_id = "你的预览KV命名空间ID" }
-   ]
-   ```
-
-6. 部署到 Cloudflare Workers
-   ```bash
-   wrangler publish
-   ```
-
-## 本地开发
-
-1. 安装依赖
-   ```bash
-   npm install -g wrangler
-   ```
-
-2. 启动本地开发服务器
-   ```bash
-   wrangler dev
-   ```
-
-3. 在浏览器中访问 http://localhost:8787
-
-## 项目结构
-
-```
-prompthub/
-├── public/              # 静态资源
-│   ├── css/             # 样式文件
-│   ├── js/              # JavaScript 文件
-│   └── index.html       # 主页面
-├── src/                 # 源代码
-│   └── worker.js        # Cloudflare Worker 代码
-├── wrangler.toml        # Wrangler 配置文件
-└── README.md            # 项目说明文档
-```
-
-## 使用方法
-
-1. 打开网站后，点击"新建提示词"按钮创建你的第一个提示词
-2. 填写标题、内容和标签（用逗号分隔多个标签）
-3. 点击保存即可添加到你的提示词库
-4. 使用搜索框查找特定提示词，或通过标签筛选相关提示词
-5. 点击提示词卡片查看详情，可以复制、编辑或删除提示词
-
-## 许可证
-
-MIT
