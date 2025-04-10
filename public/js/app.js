@@ -3,14 +3,30 @@
  * 处理提示词的添加、编辑、删除、搜索和显示
  */
 
-// API基础URL配置
-// 手动部署时，请将此处修改为你的Cloudflare Worker URL
-const API_BASE_URL = 'https://your-worker-name.workers.dev/api/';
+// 从环境变量或注入的变量获取API地址
+function getApiBaseUrl() {
+  // 1. 优先使用Cloudflare Pages环境变量注入的全局变量
+  if (window.ENV && window.ENV.API_URL) {
+    return window.ENV.API_URL;
+  }
+  
+  // 2. 尝试从meta标签获取
+  const metaApiUrl = document.querySelector('meta[name="api-base-url"]');
+  if (metaApiUrl && metaApiUrl.content) {
+    return metaApiUrl.content;
+  }
+  
+  // 3. 本地开发环境
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    return 'http://localhost:8787/api/';
+  }
+  
+  // 4. 默认使用相对路径（适用于Worker和Pages在同一域名下的情况）
+  return '/api/';
+}
 
-// 如果您希望自动检测API地址：
-// const API_BASE_URL = location.hostname === 'localhost' || location.hostname === '127.0.0.1' 
-//   ? 'http://localhost:8787/api/' 
-//   : '/api/';
+// 设置API基础URL
+const API_BASE_URL = getApiBaseUrl();
 
 // DOM元素
 const promptsContainer = document.getElementById('prompts-container');

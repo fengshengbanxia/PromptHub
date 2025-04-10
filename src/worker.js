@@ -4,18 +4,21 @@
  */
 
 // 允许跨域请求的配置
-// 手动部署时，将'*'替换为您的Pages域名，例如 'https://prompthub.pages.dev'
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+// 从环境变量获取允许的源（CORS）
+// 如果环境变量未设置，则允许所有源
+const getCorsHeaders = (env) => {
+  return {
+    'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
 };
 
 // 处理OPTIONS请求（CORS预检请求）
-function handleOptions(request) {
+function handleOptions(request, env) {
   return new Response(null, {
     status: 204,
-    headers: corsHeaders,
+    headers: getCorsHeaders(env),
   });
 }
 
@@ -27,7 +30,7 @@ async function handleApiRequest(request, env) {
   // 添加CORS头到所有响应
   const headers = {
     'Content-Type': 'application/json',
-    ...corsHeaders,
+    ...getCorsHeaders(env),
   };
 
   // 处理不同的API路由
@@ -162,7 +165,7 @@ export default {
     
     // 处理CORS预检请求
     if (request.method === 'OPTIONS') {
-      return handleOptions(request);
+      return handleOptions(request, env);
     }
     
     // 处理API请求

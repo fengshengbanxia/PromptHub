@@ -26,17 +26,7 @@
 4. 为Worker命名，例如 `prompthub-api`
 5. 进入编辑界面后，删除默认代码
 6. 将 `src/worker.js` 的全部内容复制粘贴到编辑器中
-7. **修改CORS设置**:
-   ```javascript
-   // 找到这一行
-   const corsHeaders = {
-     'Access-Control-Allow-Origin': '*',
-     // ...其他设置
-   };
-   
-   // 暂时保持'*'，后续配置Pages后再修改为具体域名
-   ```
-8. 点击 **保存并部署** 按钮
+7. 点击 **保存并部署** 按钮
 
 ### 3. 绑定KV到Worker
 
@@ -53,26 +43,9 @@
 Worker部署完成后，会生成一个URL，格式如：
 `https://prompthub-api.your-account.workers.dev`
 
-**记下这个URL**，后续需要配置到前端代码中。
+**记下这个URL**，后续需要配置到Pages环境变量中。
 
-## 三、修改前端代码
-
-在上传到Pages之前，需要修改前端代码中的API地址：
-
-1. 打开 `public/js/app.js` 文件
-2. 找到API配置部分（文件顶部）：
-   ```javascript
-   // API基础URL配置
-   // 手动部署时，请将此处修改为你的Cloudflare Worker URL
-   const API_BASE_URL = 'https://your-worker-name.workers.dev/api/';
-   ```
-3. 将URL替换为您的Worker URL加上'/api/'路径，例如：
-   ```javascript
-   const API_BASE_URL = 'https://prompthub-api.your-account.workers.dev/api/';
-   ```
-4. 保存文件
-
-## 四、部署Pages（前端网站）
+## 三、部署Pages（前端网站）
 
 ### 1. 创建Pages项目
 
@@ -85,35 +58,42 @@ Worker部署完成后，会生成一个URL，格式如：
 7. 选择PromptHub项目中的 `public` 目录下的所有文件和文件夹
 8. 点击 **部署站点** 按钮
 
-### 2. 获取Pages URL
+### 2. 配置Pages环境变量
 
-部署完成后，Pages会生成一个URL，格式如：
+部署完成后，需要设置环境变量来指定API地址：
+
+1. 在Pages项目详情页面，点击 **设置** 选项卡
+2. 点击 **环境变量**
+3. 点击 **添加变量** 按钮
+4. 变量名填写 `API_URL`
+5. 变量值填写您的Worker URL加上'/api/'路径，例如：`https://prompthub-api.your-account.workers.dev/api/`
+6. 选择 **Production** 和 **Preview** 环境 
+7. 点击 **保存** 按钮
+8. 进入 **函数** 选项卡
+9. 在 **环境变量** 部分，找到 **_ROUTES_INDEX** 选项
+10. 将其值设置为 `js/env-config.js`，这会激活环境变量注入
+11. 点击 **保存** 按钮
+12. 点击 **部署** 选项卡，然后点击 **重新部署**，以使环境变量生效
+
+### 3. 获取Pages URL
+
+Pages会生成一个URL，格式如：
 `https://prompthub.pages.dev`
 
-**记下这个URL**，需要配置回Worker的CORS设置。
+**记下这个URL**，需要配置到Worker的环境变量中。
 
-## 五、完成CORS配置
+## 四、配置CORS（跨域）
 
-为了让前端能够正确调用API，需要更新Worker的CORS设置：
+为了让前端能够正确调用API，需要在Worker中设置CORS环境变量：
 
-1. 返回Worker编辑页面
-2. 找到CORS配置部分：
-   ```javascript
-   const corsHeaders = {
-     'Access-Control-Allow-Origin': '*',
-     // ...其他设置
-   };
-   ```
-3. 将 `'*'` 替换为您的Pages URL：
-   ```javascript
-   const corsHeaders = {
-     'Access-Control-Allow-Origin': 'https://prompthub.pages.dev',
-     // ...其他设置
-   };
-   ```
-4. 点击 **保存并部署** 按钮
+1. 进入您的Worker设置页面
+2. 点击 **设置** 选项卡，然后点击 **变量**
+3. 在 **环境变量** 部分点击 **添加变量**
+4. 变量名填写 `ALLOWED_ORIGIN`
+5. 变量值填写您的Pages URL，例如 `https://prompthub.pages.dev`
+6. 点击 **保存** 按钮
 
-## 六、测试应用
+## 五、测试应用
 
 1. 访问您的Pages URL (例如 `https://prompthub.pages.dev`)
 2. 测试以下功能:
@@ -128,18 +108,25 @@ Worker部署完成后，会生成一个URL，格式如：
 ### 1. API请求失败
 
 如果前端无法成功调用API，检查:
-- API_BASE_URL是否正确配置
-- Worker的CORS设置是否正确
+- Pages中的API_URL环境变量是否正确配置
+- Worker的ALLOWED_ORIGIN环境变量是否正确设置
 - 控制台中是否有错误信息
 
-### 2. KV存储问题
+### 2. 环境变量注入失败
+
+如果环境变量没有正确注入到前端:
+- 确认已设置 `_ROUTES_INDEX` 为 `js/env-config.js`
+- 查看 `env-config.js` 文件是否正确部署
+- 尝试清除浏览器缓存或强制刷新页面
+
+### 3. KV存储问题
 
 如果数据无法保存或读取:
 - 确认KV命名空间绑定名称为`PROMPTS_KV`
 - 检查KV绑定是否成功配置
 - 查看Worker的错误日志
 
-### 3. 部署失败
+### 4. 部署失败
 
 如果Pages或Worker部署失败:
 - 检查代码语法是否正确
@@ -152,3 +139,15 @@ Worker部署完成后，会生成一个URL，格式如：
 1. 修改本地代码
 2. 对于Worker，复制新代码到Worker编辑器中并重新部署
 3. 对于Pages，重新上传修改后的文件并部署
+
+## 高级配置：Worker Routes（可选）
+
+如果您希望使用同一域名提供API和前端（无需处理CORS），可以设置Worker Routes：
+
+1. 在Cloudflare Dashboard的 **Workers & Pages** 中
+2. 选择您的Pages项目
+3. 点击 **设置** > **函数**
+4. 在 **Routes** 部分，点击 **添加Route**
+5. 路径模式设置为 `/api/*`
+6. 选择您之前创建的Worker
+7. 这样，所有对 `/api/*` 的请求都会转发到您的Worker，而无需处理CORS
