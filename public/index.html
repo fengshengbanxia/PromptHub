@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptHub - 个人提示词管理</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <meta name="description" content="PromptHub - 简单高效地存储、搜索和复制AI提示词">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1><i class="bi bi-chat-square-text"></i> PromptHub</h1>
+      <div class="search-container">
+        <input type="text" id="search-input" placeholder="搜索提示词..." aria-label="搜索提示词">
+        <button id="search-button"><i class="bi bi-search"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="controls">
+      <button id="new-prompt" class="primary-button"><i class="bi bi-plus-lg"></i> 新建提示词</button>
+      <div class="filter-container">
+        <label for="tag-filter">标签筛选:</label>
+        <select id="tag-filter">
+          <option value="">全部标签</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="prompts-container" class="prompts-grid">
+      <!-- 提示词卡片将通过JS动态插入 -->
+      <div class="prompt-skeleton"></div>
+      <div class="prompt-skeleton"></div>
+      <div class="prompt-skeleton"></div>
+    </div>
+
+    <div id="empty-state" class="hidden">
+      <div class="empty-content">
+        <i class="bi bi-journal-text empty-icon"></i>
+        <h2>还没有提示词</h2>
+        <p>点击"新建提示词"按钮开始创建</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- 新建/编辑提示词的模态框 -->
+  <div id="prompt-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">新建提示词</h2>
+        <button class="close-button" id="close-modal"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="prompt-form">
+          <input type="hidden" id="prompt-id">
+          <div class="form-group">
+            <label for="prompt-title">标题</label>
+            <input type="text" id="prompt-title" required placeholder="输入提示词标题">
+          </div>
+          <div class="form-group">
+            <label for="prompt-content">内容</label>
+            <textarea id="prompt-content" required placeholder="输入提示词内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="prompt-tags">标签</label>
+            <input type="text" id="prompt-tags" required placeholder="输入标签，用逗号分隔">
+            <small>例如: GPT-4, 写作, 创意</small>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="secondary-button" id="cancel-button">取消</button>
+            <button type="submit" class="primary-button" id="save-button">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看提示词详情的模态框 -->
+  <div id="view-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="view-title"></h2>
+        <button class="close-button" id="close-view"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="view-content">
+          <div class="content-box">
+            <pre id="view-content"></pre>
+          </div>
+          <div class="tags-container" id="view-tags"></div>
+        </div>
+        <div class="view-actions">
+          <button class="secondary-button" id="copy-button"><i class="bi bi-clipboard"></i> 复制</button>
+          <button class="secondary-button" id="edit-button"><i class="bi bi-pencil"></i> 编辑</button>
+          <button class="danger-button" id="delete-button"><i class="bi bi-trash"></i> 删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 确认删除的模态框 -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-content small-modal">
+      <div class="modal-header">
+        <h2>确认删除</h2>
+        <button class="close-button" id="close-confirm"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <p>确定要删除这个提示词吗？此操作无法撤销。</p>
+        <div class="form-actions">
+          <button class="secondary-button" id="cancel-delete">取消</button>
+          <button class="danger-button" id="confirm-delete">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">
+    <span id="toast-message"></span>
+  </div>
+
+  <div id="copied-toast" class="copied-toast hidden">
+    <i class="bi bi-clipboard-check"></i> 已复制到剪贴板
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>PromptHub &copy; 2025 | 基于 Cloudflare 构建</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

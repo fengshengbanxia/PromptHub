@@ -1,0 +1,11 @@
+name = "prompthub"
+main = "src/worker.js"
+compatibility_date = "2023-10-02"
+
+# Cloudflare Workers KV 配置
+kv_namespaces = [
+  { binding = "PROMPTS_KV", id = "your-kv-id-here", preview_id = "your-preview-kv-id-here" }
+]
+
+[site]
+bucket = "./public"
