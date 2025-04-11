@@ -17,28 +17,6 @@ export default {
       const path = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '')
       const pathParts = path.split('/')
       
-      // 处理标签相关路由
-      if (pathParts[0] === 'tags' || (pathParts[0] === 'api' && pathParts[1] === 'tags')) {
-        const isApiPrefix = pathParts[0] === 'api'
-        const tagsPathIndex = isApiPrefix ? 1 : 0
-        
-        // 处理/tags或/api/tags路径
-        if (pathParts.length === tagsPathIndex + 1) {
-          // 获取所有标签
-          if (request.method === 'GET') {
-            return await getAllTags(env)
-          }
-        }
-        // 处理/tags/:name或/api/tags/:name路径
-        else if (pathParts.length === tagsPathIndex + 2) {
-          const tagName = pathParts[tagsPathIndex + 1]
-          
-          if (request.method === 'GET') {
-            return await getTag(tagName, env)
-          }
-        }
-      }
-      
       // 修改路由检查，同时支持/api/prompts和/prompts两种路径
       if (pathParts[0] === 'api' && pathParts[1] === 'prompts') {
         // 处理/api/prompts路径
@@ -108,152 +86,6 @@ export default {
         }
       })
     }
-  }
-}
-
-// 获取所有标签
-async function getAllTags(env) {
-  // 获取KV中所有标签的键
-  const keys = await env.PROMPTS_KV.list({ prefix: 'tag_' })
-  
-  // 获取所有标签的值
-  const tags = await Promise.all(
-    keys.keys.map(async key => {
-      const tagJson = await env.PROMPTS_KV.get(key.name)
-      try {
-        // 标签名是键的一部分，移除前缀"tag_"
-        const tagName = key.name.substring(4)
-        const tagData = JSON.parse(tagJson)
-        return {
-          name: tagName,
-          count: tagData.count || 0,
-          promptIds: tagData.promptIds || []
-        }
-      } catch (e) {
-        console.error(`解析标签JSON失败 ${key.name}:`, e)
-        return null
-      }
-    })
-  )
-  
-  // 过滤掉解析失败的项
-  const validTags = tags.filter(tag => tag !== null)
-  
-  // 按使用次数排序
-  validTags.sort((a, b) => b.count - a.count)
-  
-  return new Response(JSON.stringify(validTags), {
-    headers: {
-      'Content-Type': 'application/json',
-      ...getCORSHeaders(null, env)
-    }
-  })
-}
-
-// 获取单个标签
-async function getTag(name, env) {
-  const key = `tag_${name}`
-  const tagJson = await env.PROMPTS_KV.get(key)
-  
-  if (tagJson === null) {
-    return new Response(JSON.stringify({ error: '标签不存在' }), {
-      status: 404,
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(null, env)
-      }
-    })
-  }
-  
-  try {
-    const tagData = JSON.parse(tagJson)
-    return new Response(JSON.stringify({
-      name,
-      count: tagData.count || 0,
-      promptIds: tagData.promptIds || []
-    }), {
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(null, env)
-      }
-    })
-  } catch (e) {
-    return new Response(JSON.stringify({ error: '解析标签数据失败' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(null, env)
-      }
-    })
-  }
-}
-
-// 更新标签计数和关联
-async function updateTagsForPrompt(oldTags, newTags, promptId, env) {
-  if (!Array.isArray(oldTags)) oldTags = []
-  if (!Array.isArray(newTags)) newTags = []
-  
-  // 标准化标签 - 转为小写并去除重复项
-  const normalizedOldTags = [...new Set(oldTags.map(tag => tag.toLowerCase()))]
-  const normalizedNewTags = [...new Set(newTags.map(tag => tag.toLowerCase()))]
-  
-  // 确定要移除和添加的标签
-  const tagsToRemove = normalizedOldTags.filter(tag => !normalizedNewTags.includes(tag))
-  const tagsToAdd = normalizedNewTags.filter(tag => !normalizedOldTags.includes(tag))
-  
-  // 移除标签关联
-  for (const tag of tagsToRemove) {
-    const key = `tag_${tag}`
-    const tagJson = await env.PROMPTS_KV.get(key)
-    
-    if (tagJson) {
-      try {
-        const tagData = JSON.parse(tagJson)
-        // 移除提示词ID并减少计数
-        tagData.promptIds = (tagData.promptIds || []).filter(id => id !== promptId)
-        tagData.count = Math.max((tagData.count || 0) - 1, 0)
-        
-        if (tagData.count > 0) {
-          // 更新标签数据
-          await env.PROMPTS_KV.put(key, JSON.stringify(tagData))
-        } else {
-          // 如果计数为0，删除标签
-          await env.PROMPTS_KV.delete(key)
-        }
-      } catch (e) {
-        console.error(`更新标签失败 ${key}:`, e)
-      }
-    }
-  }
-  
-  // 添加标签关联
-  for (const tag of tagsToAdd) {
-    const key = `tag_${tag}`
-    const tagJson = await env.PROMPTS_KV.get(key)
-    
-    let tagData = { count: 1, promptIds: [promptId] }
-    
-    if (tagJson) {
-      try {
-        const existingTagData = JSON.parse(tagJson)
-        // 添加提示词ID并增加计数
-        const existingPromptIds = existingTagData.promptIds || []
-        if (!existingPromptIds.includes(promptId)) {
-          tagData = {
-            count: (existingTagData.count || 0) + 1,
-            promptIds: [...existingPromptIds, promptId]
-          }
-        } else {
-          // 已经存在，不做更改
-          tagData = existingTagData
-        }
-      } catch (e) {
-        console.error(`解析标签数据失败 ${key}:`, e)
-      }
-    }
-    
-    // 保存标签数据
-    await env.PROMPTS_KV.put(key, JSON.stringify(tagData))
   }
 }
 
@@ -352,9 +184,6 @@ async function createPrompt(request, env) {
   // 保存到KV
   await env.PROMPTS_KV.put(`prompt_${id}`, JSON.stringify(prompt))
   
-  // 更新标签
-  await updateTagsForPrompt([], prompt.tags, id, env)
-  
   return new Response(JSON.stringify(prompt), {
     status: 201,
     headers: {
@@ -432,9 +261,6 @@ async function updatePrompt(id, request, env) {
   // 保存更新后的提示词
   await env.PROMPTS_KV.put(key, JSON.stringify(updatedPrompt))
   
-  // 更新标签
-  await updateTagsForPrompt(existingPrompt.tags || [], updatedPrompt.tags || [], id, env)
-  
   return new Response(JSON.stringify(updatedPrompt), {
     headers: {
       'Content-Type': 'application/json',
@@ -458,18 +284,6 @@ async function deletePrompt(id, env) {
       }
     })
   }
-  
-  // 解析提示词数据，获取标签信息
-  let existingPrompt
-  try {
-    existingPrompt = JSON.parse(existingPromptJson)
-  } catch (e) {
-    console.error(`解析提示词JSON失败 ${key}:`, e)
-    existingPrompt = { tags: [] }
-  }
-  
-  // 更新标签计数和关联
-  await updateTagsForPrompt(existingPrompt.tags || [], [], id, env)
   
   // 从KV中删除
   await env.PROMPTS_KV.delete(key)
