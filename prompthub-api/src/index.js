@@ -209,36 +209,11 @@ async function updatePrompt(id, request, env) {
     })
   }
   
-  // 解析现有提示词数据
-  let existingPrompt
-  try {
-    existingPrompt = JSON.parse(existingPromptJson)
-  } catch (e) {
-    return new Response(JSON.stringify({ error: '解析提示词数据失败' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(request, env)
-      }
-    })
-  }
-  
-  const contentType = request.headers.get('Content-Type') || ''
-  
-  if (!contentType.includes('application/json')) {
-    return new Response(JSON.stringify({ error: '仅支持JSON格式' }), {
-      status: 400,
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(request, env)
-      }
-    })
-  }
-  
-  const promptData = await request.json()
+  const existingPrompt = JSON.parse(existingPromptJson)
+  const updatedData = await request.json()
   
   // 验证必填字段
-  if (!promptData.title || !promptData.content) {
+  if (!updatedData.title || !updatedData.content) {
     return new Response(JSON.stringify({ error: '标题和内容不能为空' }), {
       status: 400,
       headers: {
@@ -248,17 +223,17 @@ async function updatePrompt(id, request, env) {
     })
   }
   
-  // 合并更新数据
+  // 更新提示词数据
   const updatedPrompt = {
     ...existingPrompt,
-    title: promptData.title,
-    content: promptData.content,
-    description: promptData.description || '',
-    tags: Array.isArray(promptData.tags) ? promptData.tags : [],
-    updatedAt: new Date().toISOString()
+    title: updatedData.title,
+    content: updatedData.content,
+    description: updatedData.description || existingPrompt.description || '',
+    tags: Array.isArray(updatedData.tags) ? updatedData.tags : (existingPrompt.tags || []),
+    updatedAt: updatedData.updatedAt || new Date().toISOString()
   }
   
-  // 保存更新后的提示词
+  // 保存到KV
   await env.PROMPTS_KV.put(key, JSON.stringify(updatedPrompt))
   
   return new Response(JSON.stringify(updatedPrompt), {
@@ -274,8 +249,8 @@ async function deletePrompt(id, env) {
   const key = `prompt_${id}`
   
   // 检查提示词是否存在
-  const existingPromptJson = await env.PROMPTS_KV.get(key)
-  if (existingPromptJson === null) {
+  const existingPrompt = await env.PROMPTS_KV.get(key)
+  if (existingPrompt === null) {
     return new Response(JSON.stringify({ error: '提示词不存在' }), {
       status: 404,
       headers: {
@@ -315,7 +290,7 @@ function getCORSHeaders(request, env) {
     : allowedOrigins[0]
     
   return {
-    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Origin': "*",
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
