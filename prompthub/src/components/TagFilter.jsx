@@ -27,7 +27,7 @@ const TagFilter = ({ tags }) => {
   }
   
   // 默认显示前5个标签，展开后显示所有
-  const displayTags = isExpanded ? tags : tags.slice(0, 5)
+  const displayTags = isExpanded ? tags : tags.slice(0, 30)
   
   return (
     <div>
@@ -66,7 +66,7 @@ const TagFilter = ({ tags }) => {
             onClick={toggleExpand}
             className="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700"
           >
-            {isExpanded ? '收起' : `显示更多 (${tags.length - 5})`}
+            {isExpanded ? '收起' : `显示更多 (${tags.length - 30})`}
           </button>
         )}
       </div>
