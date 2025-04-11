@@ -17,14 +17,6 @@ export default {
       const path = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '')
       const pathParts = path.split('/')
       
-      // 处理管理员操作
-      if (path === 'admin/migrate-tags') {
-        // 仅允许POST请求
-        if (request.method === 'POST') {
-          return await migrateTagsData(env)
-        }
-      }
-      
       // 处理标签相关路由
       if (pathParts[0] === 'tags' || (pathParts[0] === 'api' && pathParts[1] === 'tags')) {
         const isApiPrefix = pathParts[0] === 'api'
@@ -122,14 +114,15 @@ export default {
 // 获取所有标签
 async function getAllTags(env) {
   // 获取KV中所有标签的键
-  const keys = await env.TAGS_KV.list()
+  const keys = await env.PROMPTS_KV.list({ prefix: 'tag_' })
   
   // 获取所有标签的值
   const tags = await Promise.all(
     keys.keys.map(async key => {
-      const tagJson = await env.TAGS_KV.get(key.name)
+      const tagJson = await env.PROMPTS_KV.get(key.name)
       try {
-        const tagName = key.name
+        // 标签名是键的一部分，移除前缀"tag_"
+        const tagName = key.name.substring(4)
         const tagData = JSON.parse(tagJson)
         return {
           name: tagName,
@@ -159,7 +152,8 @@ async function getAllTags(env) {
 
 // 获取单个标签
 async function getTag(name, env) {
-  const tagJson = await env.TAGS_KV.get(name)
+  const key = `tag_${name}`
+  const tagJson = await env.PROMPTS_KV.get(key)
   
   if (tagJson === null) {
     return new Response(JSON.stringify({ error: '标签不存在' }), {
@@ -209,7 +203,8 @@ async function updateTagsForPrompt(oldTags, newTags, promptId, env) {
   
   // 移除标签关联
   for (const tag of tagsToRemove) {
-    const tagJson = await env.TAGS_KV.get(tag)
+    const key = `tag_${tag}`
+    const tagJson = await env.PROMPTS_KV.get(key)
     
     if (tagJson) {
       try {
@@ -220,20 +215,21 @@ async function updateTagsForPrompt(oldTags, newTags, promptId, env) {
         
         if (tagData.count > 0) {
           // 更新标签数据
-          await env.TAGS_KV.put(tag, JSON.stringify(tagData))
+          await env.PROMPTS_KV.put(key, JSON.stringify(tagData))
         } else {
           // 如果计数为0，删除标签
-          await env.TAGS_KV.delete(tag)
+          await env.PROMPTS_KV.delete(key)
         }
       } catch (e) {
-        console.error(`更新标签失败 ${tag}:`, e)
+        console.error(`更新标签失败 ${key}:`, e)
       }
     }
   }
   
   // 添加标签关联
   for (const tag of tagsToAdd) {
-    const tagJson = await env.TAGS_KV.get(tag)
+    const key = `tag_${tag}`
+    const tagJson = await env.PROMPTS_KV.get(key)
     
     let tagData = { count: 1, promptIds: [promptId] }
     
@@ -252,12 +248,12 @@ async function updateTagsForPrompt(oldTags, newTags, promptId, env) {
           tagData = existingTagData
         }
       } catch (e) {
-        console.error(`解析标签数据失败 ${tag}:`, e)
+        console.error(`解析标签数据失败 ${key}:`, e)
       }
     }
     
     // 保存标签数据
-    await env.TAGS_KV.put(tag, JSON.stringify(tagData))
+    await env.PROMPTS_KV.put(key, JSON.stringify(tagData))
   }
 }
 
@@ -509,63 +505,5 @@ function getCORSHeaders(request, env) {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
-  }
-}
-
-// 迁移标签数据
-async function migrateTagsData(env) {
-  try {
-    // 获取旧KV中的所有标签
-    const oldKeys = await env.PROMPTS_KV.list({ prefix: 'tag_' })
-    
-    // 迁移计数
-    let migratedCount = 0
-    let errorCount = 0
-    
-    // 迁移每个标签
-    for (const key of oldKeys.keys) {
-      try {
-        const oldTagJson = await env.PROMPTS_KV.get(key.name)
-        if (oldTagJson) {
-          // 提取标签名（去除前缀）
-          const tagName = key.name.substring(4)
-          
-          // 将标签数据存储到新的KV命名空间
-          await env.TAGS_KV.put(tagName, oldTagJson)
-          migratedCount++
-        }
-      } catch (e) {
-        console.error(`迁移标签失败 ${key.name}:`, e)
-        errorCount++
-      }
-    }
-    
-    // 返回迁移结果
-    return new Response(JSON.stringify({
-      success: true,
-      message: '标签数据迁移完成',
-      stats: {
-        total: oldKeys.keys.length,
-        migrated: migratedCount,
-        errors: errorCount
-      }
-    }), {
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(null, env)
-      }
-    })
-  } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      message: '标签数据迁移失败',
-      error: error.message
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        ...getCORSHeaders(null, env)
-      }
-    })
   }
 } 
