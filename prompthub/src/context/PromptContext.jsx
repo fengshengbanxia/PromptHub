@@ -86,6 +86,12 @@ export const PromptProvider = ({ children }) => {
     return matchesSearch && matchesTags
   })
 
+  // 通过ID查找提示词
+  const getPromptById = (id) => {
+    if (!id) return null
+    return prompts.find(prompt => prompt.id === id)
+  }
+
   // 获取所有标签
   const allTags = [...new Set(prompts.flatMap(prompt => prompt.tags || []))]
 
@@ -159,6 +165,7 @@ export const PromptProvider = ({ children }) => {
       deletePrompt,
       exportPrompts,
       importPrompts,
+      getPromptById,
     }}>
       {children}
     </PromptContext.Provider>

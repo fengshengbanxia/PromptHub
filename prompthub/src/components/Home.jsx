@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePrompts } from '../context/PromptContext'
 import PromptList from './PromptList'
 import PromptDetail from './PromptDetail'
@@ -15,7 +15,8 @@ const Home = () => {
     setSelectedPrompt,
     exportPrompts,
     importPrompts,
-    allTags
+    allTags,
+    getPromptById
   } = usePrompts()
   
   const [isAddingPrompt, setIsAddingPrompt] = useState(false)
@@ -24,6 +25,19 @@ const Home = () => {
   const [isImporting, setIsImporting] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
+  
+  // 从URL参数中读取promptId
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const promptId = urlParams.get('promptId')
+    
+    if (promptId && !selectedPrompt) {
+      const prompt = getPromptById(promptId)
+      if (prompt) {
+        setSelectedPrompt(prompt)
+      }
+    }
+  }, [prompts, getPromptById, selectedPrompt])
   
   const handleAddClick = () => {
     setSelectedPrompt(null)

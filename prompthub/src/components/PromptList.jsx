@@ -3,6 +3,12 @@ import { usePrompts } from '../context/PromptContext'
 const PromptList = () => {
   const { prompts, selectedPrompt, setSelectedPrompt } = usePrompts()
 
+  // 处理点击提示词卡片的事件
+  const handlePromptClick = (prompt) => {
+    // 在新标签页中打开提示词详情
+    window.open(`${window.location.origin}?promptId=${prompt.id}`, '_blank')
+  }
+
   return (
     <div className="w-full">
       {prompts.length === 0 ? (
@@ -19,7 +25,7 @@ const PromptList = () => {
                   ? 'ring-2 ring-blue-500 dark:ring-blue-400' 
                   : ''
               } bg-white dark:bg-gray-800`}
-              onClick={() => setSelectedPrompt(prompt)}
+              onClick={() => handlePromptClick(prompt)}
             >
               <div className="p-4">
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 truncate">
