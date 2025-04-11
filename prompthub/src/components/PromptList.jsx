@@ -36,18 +36,18 @@ const PromptList = () => {
                 </p>
                 
                 {prompt.tags && prompt.tags.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {prompt.tags.slice(0, 3).map(tag => (
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {prompt.tags.slice(0, 5).map(tag => (
                       <span 
                         key={tag} 
-                        className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                        className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                       >
                         {tag}
                       </span>
                     ))}
-                    {prompt.tags.length > 3 && (
-                      <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                        +{prompt.tags.length - 3}
+                    {prompt.tags.length > 5 && (
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                        +{prompt.tags.length - 5}
                       </span>
                     )}
                   </div>
