@@ -6,7 +6,7 @@ const useMockAPI = isDevelopment && (import.meta.env.VITE_USE_MOCK_API === 'true
 
 // API基础URL，生产环境应指向Cloudflare Workers的URL
 const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://your-api-url.workers.dev'
+  ? 'https://prompthub-api.5zd20.workers.dev'
   : '/api'; // 在开发环境中，使用Vite代理
 
 // 获取所有提示词

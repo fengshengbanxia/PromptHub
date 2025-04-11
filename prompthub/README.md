@@ -62,7 +62,7 @@ wrangler kv:namespace create PROMPTS_KV
 4. 创建开发环境KV命名空间
 
 ```bash
-wrangler kv:namespace create PROMPTS_KV --preview
+wrangler kv namespace create PROMPTS_KV --preview
 ```
 
 记录下输出的preview_id，并更新`prompthub-api/wrangler.toml`中的KV配置。
@@ -97,7 +97,7 @@ wrangler pages deploy dist
 
 ```bash
 cd prompthub-api
-wrangler publish
+wrangler deploy
 ```
 
 2. 更新前端API基础URL

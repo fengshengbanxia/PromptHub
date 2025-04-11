@@ -9,4 +9,4 @@ kv_namespaces = [
 
 # 允许的跨域源，生产环境应该更严格
 [vars]
-ALLOWED_ORIGINS = "http://localhost:3000,https://your-site-url.pages.dev" 
+ALLOWED_ORIGINS = "http://localhost:3000,https://prompthub-biu.pages.dev" 
