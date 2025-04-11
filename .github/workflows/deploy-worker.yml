@@ -24,6 +24,6 @@ jobs:
       
       - name: Publish Worker
         working-directory: ./prompthub-api
-        run: wrangler publish
+        run: wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }} 
