@@ -17,13 +17,8 @@ export default {
       const path = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '')
       const pathParts = path.split('/')
       
-      // 验证API路径
-      if (pathParts[0] !== 'api') {
-        return new Response('Not Found', { status: 404 })
-      }
-      
-      // 根据路径和方法分发请求
-      if (pathParts[1] === 'prompts') {
+      // 修改路由检查，同时支持/api/prompts和/prompts两种路径
+      if (pathParts[0] === 'api' && pathParts[1] === 'prompts') {
         // 处理/api/prompts路径
         if (pathParts.length === 2) {
           // 获取所有提示词或创建新提示词
@@ -36,6 +31,30 @@ export default {
         // 处理/api/prompts/:id路径
         else if (pathParts.length === 3) {
           const promptId = pathParts[2]
+          
+          if (request.method === 'GET') {
+            return await getPrompt(promptId, env)
+          } else if (request.method === 'PUT') {
+            return await updatePrompt(promptId, request, env)
+          } else if (request.method === 'DELETE') {
+            return await deletePrompt(promptId, env)
+          }
+        }
+      }
+      // 直接访问/prompts路径
+      else if (pathParts[0] === 'prompts') {
+        // 处理/prompts路径
+        if (pathParts.length === 1) {
+          // 获取所有提示词或创建新提示词
+          if (request.method === 'GET') {
+            return await getAllPrompts(env)
+          } else if (request.method === 'POST') {
+            return await createPrompt(request, env)
+          }
+        } 
+        // 处理/prompts/:id路径
+        else if (pathParts.length === 2) {
+          const promptId = pathParts[1]
           
           if (request.method === 'GET') {
             return await getPrompt(promptId, env)

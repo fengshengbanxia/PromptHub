@@ -4,7 +4,7 @@ import mockAPI from './mockApi';
 const isDevelopment = import.meta.env.DEV;
 const useMockAPI = isDevelopment && (import.meta.env.VITE_USE_MOCK_API === 'true' || !import.meta.env.VITE_USE_MOCK_API);
 
-// API基础URL，生产环境应指向Cloudflare Workers的URL
+// API基础URL，配置为实际的Cloudflare Workers URL
 const API_BASE_URL = import.meta.env.PROD 
   ? 'https://prompthub-api.5zd20.workers.dev'
   : '/api'; // 在开发环境中，使用Vite代理
