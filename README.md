@@ -179,7 +179,8 @@ jobs:
  ![image](https://github.com/user-attachments/assets/85ba91b3-1e1d-40c2-af86-3c5aa0ec0a38)
 
 
-# 最后最阴的是，我懒得写README了，自己看着3个
-[前端README](./prompthub/README.md) 和 [后端README](./prompthub-api/README.md) 
+# 最后最阴的是，我懒得写README了，自己看这3个README文档吧，里面有些不用做，有些要做-比如替换url，部署密钥，自己摸索吧，建议用配置Cloudflare Pages与GitHub自动部署，这样不用自己上传代码，有改动自己就同步了
+[前端README](./prompthub/README.md) 和 [后端README](./prompthub-api/README.md) 以及[总README](./README.md)
+
 
 
