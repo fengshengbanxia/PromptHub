@@ -172,3 +172,14 @@ jobs:
 
 
  "Access-Control-Allow-Origin": "*", // 或替换为你的pages项目url
+
+ ## 界面展示
+ ![image.png](https://tgpicture.6666689.xyz/file/1744364209200_image.png)
+ ![image.png](https://tgpicture.6666689.xyz/file/1744364209200_image.png)
+ ![image](https://github.com/user-attachments/assets/85ba91b3-1e1d-40c2-af86-3c5aa0ec0a38)
+
+
+# 最后最阴的是，我懒得写README了，自己看着3个
+[前端README](./prompthub/README.md) 和 [后端README](./prompthub-api/README.md) 
+
+
