@@ -162,29 +162,38 @@ const Home = () => {
         </div>
       )}
       
-      {/* 顶部统计栏 */}
-      <div className="mb-6 flex justify-between items-center">
-        <StatsBar />
-        
-        {/* 主题切换按钮 */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-          aria-label={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}
-          title={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}
-        >
-          {isDarkMode ? (
-            // 太阳图标 (浅色模式)
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            // 月亮图标 (深色模式)
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
+      {/* 顶部统计栏和筛选区域 */}
+      <div className="mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* 左侧统计栏 */}
+          <div className="lg:col-span-2">
+            <StatsBar />
+          </div>
+          
+          {/* 右侧标签筛选 */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">按标签筛选</h2>
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                aria-label={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}
+                title={isDarkMode ? "切换到浅色模式" : "切换到深色模式"}
+              >
+                {isDarkMode ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            <TagFilter tags={allTags} />
+          </div>
+        </div>
       </div>
       
       {/* 提示词管理区域 - 移至页面中央 */}
@@ -207,44 +216,37 @@ const Home = () => {
           </div>
           
           <div className="mb-4">
-            <div className="flex justify-between items-start">
-              <div className="flex-grow mr-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">按标签筛选</label>
-                <TagFilter tags={allTags} />
-              </div>
-              
-              <div className="mt-7">
-                <div className="relative inline-block">
-                  <button
-                    onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
-                    className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors"
-                  >
-                    操作 ▾
-                  </button>
-                  <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
-                    <div className="py-1">
-                      <button
-                        onClick={exportPrompts}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        导出全部提示词
-                      </button>
-                      <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        导入提示词
-                        <input
-                          id="import-file"
-                          type="file"
-                          accept=".json"
-                          className="hidden"
-                          onChange={handleImportChange}
-                        />
-                      </label>
-                      {isImporting && (
-                        <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
-                          <span className="inline-block animate-spin mr-1">↻</span> 导入中...
-                        </div>
-                      )}
-                    </div>
+            <div className="flex justify-end items-start">
+              <div className="relative inline-block">
+                <button
+                  onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
+                  className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                >
+                  操作 ▾
+                </button>
+                <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                  <div className="py-1">
+                    <button
+                      onClick={exportPrompts}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      导出全部提示词
+                    </button>
+                    <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                      导入提示词
+                      <input
+                        id="import-file"
+                        type="file"
+                        accept=".json"
+                        className="hidden"
+                        onChange={handleImportChange}
+                      />
+                    </label>
+                    {isImporting && (
+                      <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
+                        <span className="inline-block animate-spin mr-1">↻</span> 导入中...
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
