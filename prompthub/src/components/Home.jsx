@@ -188,59 +188,63 @@ const Home = () => {
       </div>
       
       {/* 提示词管理区域 - 移至页面中央 */}
-      <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-        <div className="flex justify-between items-center mb-4">
+      <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-5">
+        <div className="flex justify-between items-center mb-5 border-b border-gray-200 dark:border-gray-700 pb-4">
           <h1 className="text-xl font-bold text-gray-800 dark:text-white">提示词管理</h1>
           
           <button
             onClick={handleAddClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors"
           >
             + 添加提示词
           </button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">搜索提示词</label>
             <SearchBar />
           </div>
           
-          <div className="mb-4 flex justify-between items-center">
-            <div className="flex-grow">
-              <TagFilter tags={allTags} />
-            </div>
-            
-            <div className="ml-3">
-              <div className="relative inline-block">
-                <button
-                  onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
-                  className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg"
-                >
-                  操作 ▾
-                </button>
-                <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
-                  <div className="py-1">
-                    <button
-                      onClick={exportPrompts}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      导出全部提示词
-                    </button>
-                    <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                      导入提示词
-                      <input
-                        id="import-file"
-                        type="file"
-                        accept=".json"
-                        className="hidden"
-                        onChange={handleImportChange}
-                      />
-                    </label>
-                    {isImporting && (
-                      <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
-                        <span className="inline-block animate-spin mr-1">↻</span> 导入中...
-                      </div>
-                    )}
+          <div className="mb-4">
+            <div className="flex justify-between items-start">
+              <div className="flex-grow mr-4">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">按标签筛选</label>
+                <TagFilter tags={allTags} />
+              </div>
+              
+              <div className="mt-7">
+                <div className="relative inline-block">
+                  <button
+                    onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
+                    className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    操作 ▾
+                  </button>
+                  <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1">
+                      <button
+                        onClick={exportPrompts}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        导出全部提示词
+                      </button>
+                      <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        导入提示词
+                        <input
+                          id="import-file"
+                          type="file"
+                          accept=".json"
+                          className="hidden"
+                          onChange={handleImportChange}
+                        />
+                      </label>
+                      {isImporting && (
+                        <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
+                          <span className="inline-block animate-spin mr-1">↻</span> 导入中...
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -248,7 +252,7 @@ const Home = () => {
           </div>
         </div>
         
-        <div className="mt-2">
+        <div className="mt-3 text-right">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             显示 {prompts.length} 个提示词
           </p>
@@ -256,39 +260,49 @@ const Home = () => {
       </div>
       
       {/* 主要内容区域 */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-8">
         {/* 提示词列表区域 */}
-        <div className={`${selectedPrompt || isAddingPrompt ? 'lg:w-1/2' : 'w-full'}`}>
-          {isLoading ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-          ) : (
-            <PromptList />
-          )}
+        <div className={`${selectedPrompt || isAddingPrompt ? 'lg:w-3/5' : 'w-full'} transition-all duration-300`}>
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-5">
+            <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4 border-l-4 border-blue-500 pl-3">
+              提示词列表
+            </h2>
+            {isLoading ? (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <PromptList />
+            )}
+          </div>
         </div>
         
         {/* 详情或表单区域 */}
         {(selectedPrompt || isAddingPrompt) && (
-          <div className="w-full lg:w-1/2 mt-6 lg:mt-0">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              {isAddingPrompt ? (
-                <PromptForm
-                  onCancel={handleCancelEdit}
-                  title="添加新提示词"
-                />
-              ) : isEditing && selectedPrompt ? (
-                <PromptForm
-                  prompt={selectedPrompt}
-                  onCancel={handleCancelEdit}
-                  title="编辑提示词"
-                />
-              ) : selectedPrompt ? (
-                <PromptDetail
-                  prompt={selectedPrompt}
-                  onEditClick={handleEditClick}
-                />
-              ) : null}
+          <div className="w-full lg:w-2/5 mt-6 lg:mt-0 transition-all duration-300">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-5">
+              <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4 border-l-4 border-blue-500 pl-3">
+                {isAddingPrompt ? "添加新提示词" : isEditing ? "编辑提示词" : "提示词详情"}
+              </h2>
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                {isAddingPrompt ? (
+                  <PromptForm
+                    onCancel={handleCancelEdit}
+                    title="添加新提示词"
+                  />
+                ) : isEditing && selectedPrompt ? (
+                  <PromptForm
+                    prompt={selectedPrompt}
+                    onCancel={handleCancelEdit}
+                    title="编辑提示词"
+                  />
+                ) : selectedPrompt ? (
+                  <PromptDetail
+                    prompt={selectedPrompt}
+                    onEditClick={handleEditClick}
+                  />
+                ) : null}
+              </div>
             </div>
           </div>
         )}
