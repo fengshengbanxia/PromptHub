@@ -111,4 +111,4 @@ wrangler publish
 在部署前，请确保更新 `wrangler.toml` 中的以下设置：
 
 1. KV 命名空间 ID
-2. 允许的跨域来源 (ALLOWED_ORIGINS) 。
+2. 允许的跨域来源 (ALLOWED_ORIGINS) 。。
