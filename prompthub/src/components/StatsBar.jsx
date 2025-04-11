@@ -30,10 +30,10 @@ const StatsBar = () => {
       }
     })
     
-    // 过滤出数量最多的8个分类
+    // 过滤出数量最多的12个分类
     const topCategories = Object.entries(stats.categories)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
+      .slice(0, 12)
       .reduce((obj, [key, value]) => {
         obj[key] = value
         return obj
@@ -58,16 +58,16 @@ const StatsBar = () => {
         </div>
       </div>
       
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
         {Object.entries(categoryStats.categories).map(([category, count]) => (
           <div 
             key={category}
-            className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 flex flex-col"
+            className="bg-gray-50 dark:bg-gray-700 rounded-lg p-2 flex flex-col"
           >
             <span className="text-lg font-semibold text-gray-800 dark:text-white">
               {count}
             </span>
-            <span className="text-sm text-gray-600 dark:text-gray-300 truncate">
+            <span className="text-xs text-gray-600 dark:text-gray-300 truncate">
               {category}
             </span>
           </div>
