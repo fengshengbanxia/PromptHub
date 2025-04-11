@@ -38,6 +38,17 @@ const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack })
     }
   }
   
+  // 独立模式下处理编辑
+  const handleEdit = () => {
+    if (isStandaloneMode) {
+      // 跳转到主界面并传递编辑状态参数
+      window.location.href = `${window.location.origin}?promptId=${prompt.id}&edit=true`
+    } else {
+      // 非独立模式下使用传入的编辑函数
+      onEditClick()
+    }
+  }
+  
   const formatDate = (dateString) => {
     if (!dateString) return '未知时间'
     const date = new Date(dateString)
@@ -82,14 +93,12 @@ const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack })
             复制提示词
           </button>
           
-          {!isStandaloneMode && (
-            <button
-              onClick={onEditClick}
-              className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded"
-            >
-              编辑
-            </button>
-          )}
+          <button
+            onClick={handleEdit}
+            className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded"
+          >
+            编辑
+          </button>
           
           <button
             onClick={handleDelete}

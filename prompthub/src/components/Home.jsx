@@ -31,12 +31,20 @@ const Home = () => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const promptId = urlParams.get('promptId')
+    const editMode = urlParams.get('edit')
     
     if (promptId) {
       const prompt = getPromptById(promptId)
       if (prompt) {
         setSelectedPrompt(prompt)
-        setIsDetailMode(true) // 设置为详情页模式
+        
+        // 检查是否需要进入编辑模式
+        if (editMode === 'true') {
+          setIsEditing(true)
+          setIsDetailMode(false) // 确保不是详情模式，显示完整界面
+        } else {
+          setIsDetailMode(true) // 如果不是编辑模式，则为详情页模式
+        }
       }
     }
   }, [prompts, getPromptById])
