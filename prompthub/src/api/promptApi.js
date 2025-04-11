@@ -38,14 +38,19 @@ export const getPrompt = async (id) => {
   }
   
   // 使用真实API
-  const response = await fetch(`${API_BASE_URL}/prompts/${id}`);
-  if (!response.ok) {
-    throw new Error(`API错误: ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/prompts/${id}`);
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`获取提示词 ${id} 失败:`, error);
+    throw error;
   }
-  return await response.json();
 };
 
-// 创建新提示词
+// 创建提示词
 export const createPrompt = async (promptData) => {
   // 使用模拟API
   if (useMockAPI) {
@@ -53,22 +58,24 @@ export const createPrompt = async (promptData) => {
   }
   
   // 使用真实API
-  const response = await fetch(`${API_BASE_URL}/prompts`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...promptData,
-      createdAt: new Date().toISOString(),
-    }),
-  });
-  
-  if (!response.ok) {
-    throw new Error(`API错误: ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/prompts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(promptData),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('创建提示词失败:', error);
+    throw error;
   }
-  
-  return await response.json();
 };
 
 // 更新提示词
@@ -79,22 +86,24 @@ export const updatePrompt = async (id, promptData) => {
   }
   
   // 使用真实API
-  const response = await fetch(`${API_BASE_URL}/prompts/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...promptData,
-      updatedAt: new Date().toISOString(),
-    }),
-  });
-  
-  if (!response.ok) {
-    throw new Error(`API错误: ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/prompts/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(promptData),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error(`更新提示词 ${id} 失败:`, error);
+    throw error;
   }
-  
-  return await response.json();
 };
 
 // 删除提示词
@@ -105,13 +114,61 @@ export const deletePrompt = async (id) => {
   }
   
   // 使用真实API
-  const response = await fetch(`${API_BASE_URL}/prompts/${id}`, {
-    method: 'DELETE',
-  });
-  
-  if (!response.ok) {
-    throw new Error(`API错误: ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/prompts/${id}`, {
+      method: 'DELETE',
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error(`删除提示词 ${id} 失败:`, error);
+    throw error;
+  }
+};
+
+// 获取所有标签
+export const getAllTags = async () => {
+  // 使用模拟API
+  if (useMockAPI) {
+    // 如果模拟API没有标签接口，可以返回空数组
+    return [];
   }
   
-  return await response.json();
+  // 使用真实API
+  try {
+    const response = await fetch(`${API_BASE_URL}/tags`);
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('获取标签失败:', error);
+    // 如果API不可用，返回空数组
+    return [];
+  }
+};
+
+// 获取单个标签
+export const getTag = async (name) => {
+  // 使用模拟API
+  if (useMockAPI) {
+    // 如果模拟API没有标签接口，可以返回默认值
+    return { name, count: 0, promptIds: [] };
+  }
+  
+  // 使用真实API
+  try {
+    const response = await fetch(`${API_BASE_URL}/tags/${name}`);
+    if (!response.ok) {
+      throw new Error(`API错误: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`获取标签 ${name} 失败:`, error);
+    throw error;
+  }
 }; 

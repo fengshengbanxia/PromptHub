@@ -4,7 +4,9 @@ compatibility_date = "2023-12-01"
 
 # 开发环境绑定的KV命名空间
 kv_namespaces = [
-  { binding = "PROMPTS_KV", id = "d763748af97d48b787af7a13056e23e3", preview_id = "3f2dda5d4a094b59b7819856e644015d" }
+  { binding = "PROMPTS_KV", id = "d763748af97d48b787af7a13056e23e3", preview_id = "3f2dda5d4a094b59b7819856e644015d" },
+  # 新增的标签专用KV命名空间，需要在Cloudflare控制台创建并替换下面的ID
+  { binding = "TAGS_KV", id = "7e0c86d2051545edb03ff1d184b423c0", preview_id = "48817dca10a7476682c3de3ca0564b6a" }
 ]
 
 # 允许的跨域源，生产环境应该更严格
