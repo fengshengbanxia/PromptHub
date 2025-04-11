@@ -1,0 +1,12 @@
+name = "prompthub-api"
+main = "src/index.js"
+compatibility_date = "2023-12-01"
+
+# 开发环境绑定的KV命名空间
+kv_namespaces = [
+  { binding = "PROMPTS_KV", id = "d763748af97d48b787af7a13056e23e3", preview_id = "3f2dda5d4a094b59b7819856e644015d" }
+]
+
+# 允许的跨域源，生产环境应该更严格
+[vars]
+ALLOWED_ORIGINS = "http://localhost:3000,https://your-site-url.pages.dev" 
