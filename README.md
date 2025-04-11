@@ -169,3 +169,6 @@ jobs:
 这样配置后，您的整个工作流将实现全自动化：
 - 前端代码更改 → 自动部署到Cloudflare Pages
 - 后端代码更改 → 通过GitHub Actions自动部署到Cloudflare Workers
+
+
+ "Access-Control-Allow-Origin": "*", // 或替换为你的pages项目url
