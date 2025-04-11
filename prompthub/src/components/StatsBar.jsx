@@ -48,13 +48,13 @@ const StatsBar = () => {
   // 为不同类别分配不同的样式类
   const getCategoryClass = (category) => {
     const categoryMap = {
-      '健康': 'bg-gradient-to-r from-success-50 to-success-100 dark:from-success-900 dark:to-success-800',
-      '饮食': 'bg-gradient-to-r from-warning-50 to-warning-100 dark:from-warning-900 dark:to-warning-800',
-      '生活': 'bg-gradient-to-r from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-800',
-      '代码优化': 'bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-800',
-      '开发': 'bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-800 dark:to-blue-900',
+      '健康': 'bg-gradient-to-r from-success-50 to-success-100 dark:from-success-900 dark:to-success-900',
+      '饮食': 'bg-gradient-to-r from-warning-50 to-warning-100 dark:from-warning-900 dark:to-warning-900',
+      '生活': 'bg-gradient-to-r from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-900',
+      '代码优化': 'bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-900',
+      '开发': 'bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-900 dark:to-blue-900',
       'AI绘画': 'bg-gradient-to-r from-purple-50 to-primary-50 dark:from-purple-900 dark:to-primary-900',
-      '写作': 'bg-gradient-to-r from-yellow-50 to-amber-100 dark:from-yellow-900 dark:to-amber-800',
+      '写作': 'bg-gradient-to-r from-yellow-50 to-amber-100 dark:from-yellow-900 dark:to-amber-900',
       '技术': 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700'
     }
     

@@ -28,19 +28,19 @@ body {
 @layer components {
   /* 卡片渐变背景 */
   .card-gradient-primary {
-    @apply bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-950;
+    @apply bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-900;
   }
   
   .card-gradient-secondary {
-    @apply bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-950;
+    @apply bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-900;
   }
   
   .card-gradient-success {
-    @apply bg-gradient-to-br from-success-50 to-green-100 dark:from-success-900 dark:to-success-950;
+    @apply bg-gradient-to-br from-success-50 to-green-100 dark:from-success-900 dark:to-success-900;
   }
   
   .card-gradient-warning {
-    @apply bg-gradient-to-br from-warning-50 to-warning-100 dark:from-warning-900 dark:to-warning-950;
+    @apply bg-gradient-to-br from-warning-50 to-warning-100 dark:from-warning-900 dark:to-warning-900;
   }
   
   /* 统计卡片样式 */
