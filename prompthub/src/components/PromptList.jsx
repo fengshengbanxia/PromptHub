@@ -6,7 +6,7 @@ const PromptList = () => {
   // 处理点击提示词卡片的事件
   const handlePromptClick = (prompt) => {
     // 在新标签页中打开提示词详情
-    window.open(`${window.location.origin}/prompt/${prompt.id}`, '_blank')
+    window.open(`${window.location.origin}?promptId=${prompt.id}`, '_blank')
   }
 
   return (
