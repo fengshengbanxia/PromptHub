@@ -17,9 +17,98 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  @apply bg-gray-50 dark:bg-gray-900 transition-colors duration-300;
 }
 
 .prompt-content {
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+@layer components {
+  /* 卡片渐变背景 */
+  .card-gradient-primary {
+    @apply bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-950;
+  }
+  
+  .card-gradient-secondary {
+    @apply bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-950;
+  }
+  
+  .card-gradient-success {
+    @apply bg-gradient-to-br from-success-50 to-green-100 dark:from-success-900 dark:to-success-950;
+  }
+  
+  .card-gradient-warning {
+    @apply bg-gradient-to-br from-warning-50 to-warning-100 dark:from-warning-900 dark:to-warning-950;
+  }
+  
+  /* 统计卡片样式 */
+  .stats-card {
+    @apply transition-all duration-300 hover:shadow-hover rounded-xl bg-white dark:bg-gray-800 p-4 hover:translate-y-[-2px];
+  }
+  
+  /* 标签样式 */
+  .tag {
+    @apply px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200;
+  }
+  
+  .tag-primary {
+    @apply bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-100 hover:bg-primary-200 dark:hover:bg-primary-800;
+  }
+  
+  .tag-secondary {
+    @apply bg-secondary-100 text-secondary-700 dark:bg-secondary-900 dark:text-secondary-100 hover:bg-secondary-200 dark:hover:bg-secondary-800;
+  }
+  
+  /* 按钮样式 */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500 dark:bg-secondary-700 dark:hover:bg-secondary-600;
+  }
+  
+  .btn-danger {
+    @apply bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500;
+  }
+  
+  /* 输入框样式 */
+  .input-field {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none dark:bg-gray-800 dark:text-white transition-colors duration-200;
+  }
+  
+  /* 卡片悬停效果 */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-hover hover:translate-y-[-3px];
+  }
+  
+  /* 页面转场效果 */
+  .page-transition {
+    @apply animate-fade-in;
+  }
+  
+  /* 卡片内容布局 */
+  .card-content {
+    @apply flex flex-col h-full justify-between;
+  }
+}
+
+/* 提供自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors duration-200;
 } 
