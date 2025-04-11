@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { usePrompts } from '../context/PromptContext'
 
-const PromptDetail = ({ prompt, onEditClick }) => {
+const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack }) => {
   const { deletePrompt } = usePrompts()
   const contentRef = useRef(null)
   
@@ -32,6 +32,9 @@ const PromptDetail = ({ prompt, onEditClick }) => {
   const handleDelete = () => {
     if (window.confirm(`确定要删除提示词 "${prompt.title}" 吗？`)) {
       deletePrompt(prompt.id)
+      if (isStandaloneMode && onBack) {
+        onBack() // 如果是独立模式，删除后返回
+      }
     }
   }
   
@@ -50,9 +53,25 @@ const PromptDetail = ({ prompt, onEditClick }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          {prompt.title}
-        </h2>
+        {isStandaloneMode ? (
+          <div className="flex items-center">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="mr-4 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <span className="text-xl">←</span>
+              </button>
+            )}
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+              {prompt.title}
+            </h2>
+          </div>
+        ) : (
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+            {prompt.title}
+          </h2>
+        )}
         
         <div className="flex gap-2">
           <button
@@ -63,12 +82,14 @@ const PromptDetail = ({ prompt, onEditClick }) => {
             复制提示词
           </button>
           
-          <button
-            onClick={onEditClick}
-            className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded"
-          >
-            编辑
-          </button>
+          {!isStandaloneMode && (
+            <button
+              onClick={onEditClick}
+              className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded"
+            >
+              编辑
+            </button>
+          )}
           
           <button
             onClick={handleDelete}
