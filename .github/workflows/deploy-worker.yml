@@ -1,0 +1,29 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches:
+      - main  # 如果您的主分支是master，请修改这里
+    paths:
+      - 'prompthub-api/**'  # 只有当后端代码发生变化时才触发部署
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler
+      
+      - name: Publish Worker
+        working-directory: ./prompthub-api
+        run: wrangler publish
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }} 
