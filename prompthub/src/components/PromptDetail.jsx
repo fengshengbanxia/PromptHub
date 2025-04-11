@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { usePrompts } from '../context/PromptContext'
 
-const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack }) => {
+const PromptDetail = ({ prompt, onEditClick }) => {
   const { deletePrompt } = usePrompts()
   const contentRef = useRef(null)
   
@@ -32,20 +32,6 @@ const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack })
   const handleDelete = () => {
     if (window.confirm(`确定要删除提示词 "${prompt.title}" 吗？`)) {
       deletePrompt(prompt.id)
-      if (isStandaloneMode && onBack) {
-        onBack() // 如果是独立模式，删除后返回
-      }
-    }
-  }
-  
-  // 独立模式下处理编辑
-  const handleEdit = () => {
-    if (isStandaloneMode) {
-      // 跳转到主界面并传递编辑状态参数
-      window.location.href = `${window.location.origin}?promptId=${prompt.id}&edit=true`
-    } else {
-      // 非独立模式下使用传入的编辑函数
-      onEditClick()
     }
   }
   
@@ -64,25 +50,9 @@ const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack })
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        {isStandaloneMode ? (
-          <div className="flex items-center">
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="mr-4 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <span className="text-xl">←</span>
-              </button>
-            )}
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              {prompt.title}
-            </h2>
-          </div>
-        ) : (
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {prompt.title}
-          </h2>
-        )}
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+          {prompt.title}
+        </h2>
         
         <div className="flex gap-2">
           <button
@@ -94,7 +64,7 @@ const PromptDetail = ({ prompt, onEditClick, isStandaloneMode = false, onBack })
           </button>
           
           <button
-            onClick={handleEdit}
+            onClick={onEditClick}
             className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-medium py-2 px-4 rounded"
           >
             编辑

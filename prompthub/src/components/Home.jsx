@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { usePrompts } from '../context/PromptContext'
 import PromptList from './PromptList'
 import PromptDetail from './PromptDetail'
@@ -15,8 +15,7 @@ const Home = () => {
     setSelectedPrompt,
     exportPrompts,
     importPrompts,
-    allTags,
-    getPromptById
+    allTags
   } = usePrompts()
   
   const [isAddingPrompt, setIsAddingPrompt] = useState(false)
@@ -25,29 +24,6 @@ const Home = () => {
   const [isImporting, setIsImporting] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
   const [showSidebar, setShowSidebar] = useState(true)
-  const [isDetailMode, setIsDetailMode] = useState(false)
-  
-  // 从URL参数中读取promptId
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const promptId = urlParams.get('promptId')
-    const editMode = urlParams.get('edit')
-    
-    if (promptId) {
-      const prompt = getPromptById(promptId)
-      if (prompt) {
-        setSelectedPrompt(prompt)
-        
-        // 检查是否需要进入编辑模式
-        if (editMode === 'true') {
-          setIsEditing(true)
-          setIsDetailMode(false) // 确保不是详情模式，显示完整界面
-        } else {
-          setIsDetailMode(true) // 如果不是编辑模式，则为详情页模式
-        }
-      }
-    }
-  }, [prompts, getPromptById])
   
   const handleAddClick = () => {
     setSelectedPrompt(null)
@@ -116,29 +92,6 @@ const Home = () => {
   // 切换侧边栏显示
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar)
-  }
-  
-  // 返回到主页
-  const handleBackToHome = () => {
-    window.close() // 关闭当前标签页
-    // 如果是从主页直接打开的，可以通过以下方式返回主页
-    // window.location.href = window.location.origin
-  }
-  
-  // 如果是详情页模式，只显示提示词详情
-  if (isDetailMode && selectedPrompt) {
-    return (
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <PromptDetail
-            prompt={selectedPrompt}
-            onEditClick={handleEditClick}
-            isStandaloneMode={true}
-            onBack={handleBackToHome}
-          />
-        </div>
-      </div>
-    )
   }
   
   return (
