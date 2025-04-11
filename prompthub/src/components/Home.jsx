@@ -5,6 +5,7 @@ import PromptDetail from './PromptDetail'
 import PromptForm from './PromptForm'
 import SearchBar from './SearchBar'
 import TagFilter from './TagFilter'
+import StatsBar from './StatsBar'
 
 const Home = () => {
   const { 
@@ -22,6 +23,7 @@ const Home = () => {
   const [importFile, setImportFile] = useState(null)
   const [isImporting, setIsImporting] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
+  const [showSidebar, setShowSidebar] = useState(true)
   
   const handleAddClick = () => {
     setSelectedPrompt(null)
@@ -87,8 +89,13 @@ const Home = () => {
     document.getElementById('import-file').value = ''
   }
   
+  // 切换侧边栏显示
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar)
+  }
+  
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6">
       {/* 导入模式选择对话框 */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -122,105 +129,127 @@ const Home = () => {
         </div>
       )}
       
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* 左侧面板：搜索、标签过滤和提示词列表 */}
-        <div className="w-full md:w-1/3 lg:w-1/4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-4">
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">提示词管理</h1>
-            
-            <div className="mb-4">
-              <SearchBar />
-            </div>
-            
-            <div className="mb-4">
-              <TagFilter tags={allTags} />
-            </div>
-            
-            <div className="flex justify-between mb-4">
-              <button
-                onClick={handleAddClick}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                添加提示词
-              </button>
-              
-              <div className="relative inline-block">
+      {/* 顶部统计栏 */}
+      <div className="mb-6">
+        <StatsBar />
+      </div>
+      
+      {/* 主内容区 */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* 侧边栏控制按钮（仅在移动设备上显示） */}
+        <div className="lg:hidden mb-4">
+          <button 
+            onClick={toggleSidebar}
+            className="w-full py-2 bg-blue-600 text-white rounded-lg flex items-center justify-center"
+          >
+            {showSidebar ? '隐藏筛选' : '显示筛选'}
+          </button>
+        </div>
+        
+        {/* 侧边栏：筛选和操作 */}
+        {(showSidebar || window.innerWidth >= 1024) && (
+          <div className="w-full lg:w-1/4 flex-shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4 sticky top-4">
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-xl font-bold text-gray-800 dark:text-white">提示词管理</h1>
+                
                 <button
-                  onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
-                  className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded"
+                  onClick={handleAddClick}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-lg text-sm"
                 >
-                  更多选项
+                  + 添加提示词
                 </button>
-                <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
-                  <div className="py-1">
-                    <button
-                      onClick={exportPrompts}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      导出全部提示词
-                    </button>
-                    <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                      导入提示词
-                      <input
-                        id="import-file"
-                        type="file"
-                        accept=".json"
-                        className="hidden"
-                        onChange={handleImportChange}
-                      />
-                    </label>
-                    {isImporting && (
-                      <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
-                        <span className="inline-block animate-spin mr-1">↻</span> 导入中...
-                      </div>
-                    )}
+              </div>
+              
+              <div className="mb-4">
+                <SearchBar />
+              </div>
+              
+              <div className="mb-4">
+                <TagFilter tags={allTags} />
+              </div>
+              
+              <div className="flex justify-end">
+                <div className="relative inline-block">
+                  <button
+                    onClick={() => document.getElementById('options-menu').classList.toggle('hidden')}
+                    className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded-lg"
+                  >
+                    操作 ▾
+                  </button>
+                  <div id="options-menu" className="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="py-1">
+                      <button
+                        onClick={exportPrompts}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        导出全部提示词
+                      </button>
+                      <label className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        导入提示词
+                        <input
+                          id="import-file"
+                          type="file"
+                          accept=".json"
+                          className="hidden"
+                          onChange={handleImportChange}
+                        />
+                      </label>
+                      {isImporting && (
+                        <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
+                          <span className="inline-block animate-spin mr-1">↻</span> 导入中...
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
+              
+              <div className="mt-4">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  显示 {prompts.length} 个提示词
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* 主要内容区域 */}
+        <div className="flex-grow">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* 提示词列表区域 */}
+            <div className={`${selectedPrompt || isAddingPrompt ? 'hidden lg:block lg:w-1/2' : 'w-full'}`}>
+              {isLoading ? (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+              ) : (
+                <PromptList />
+              )}
             </div>
             
-            <div className="mt-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                共 {prompts.length} 个提示词
-              </p>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            {isLoading ? (
-              <div className="flex justify-center items-center h-32">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
-              </div>
-            ) : (
-              <PromptList />
-            )}
-          </div>
-        </div>
-        
-        {/* 右侧面板：详情或表单 */}
-        <div className="w-full md:w-2/3 lg:w-3/4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            {isAddingPrompt ? (
-              <PromptForm
-                onCancel={handleCancelEdit}
-                title="添加新提示词"
-              />
-            ) : isEditing && selectedPrompt ? (
-              <PromptForm
-                prompt={selectedPrompt}
-                onCancel={handleCancelEdit}
-                title="编辑提示词"
-              />
-            ) : selectedPrompt ? (
-              <PromptDetail
-                prompt={selectedPrompt}
-                onEditClick={handleEditClick}
-              />
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-xl text-gray-500 dark:text-gray-400">
-                  选择一个提示词查看详情，或点击"添加提示词"创建新的提示词
-                </p>
+            {/* 详情或表单区域 */}
+            {(selectedPrompt || isAddingPrompt) && (
+              <div className="w-full lg:w-1/2">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  {isAddingPrompt ? (
+                    <PromptForm
+                      onCancel={handleCancelEdit}
+                      title="添加新提示词"
+                    />
+                  ) : isEditing && selectedPrompt ? (
+                    <PromptForm
+                      prompt={selectedPrompt}
+                      onCancel={handleCancelEdit}
+                      title="编辑提示词"
+                    />
+                  ) : selectedPrompt ? (
+                    <PromptDetail
+                      prompt={selectedPrompt}
+                      onEditClick={handleEditClick}
+                    />
+                  ) : null}
+                </div>
               </div>
             )}
           </div>
