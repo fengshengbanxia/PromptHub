@@ -13,6 +13,7 @@ const Home = () => {
     selectedPrompt, 
     setSelectedPrompt,
     exportPrompts,
+    importPrompts,
     allTags
   } = usePrompts()
   
@@ -51,7 +52,6 @@ const Home = () => {
       reader.onload = async (e) => {
         try {
           const jsonData = JSON.parse(e.target.result)
-          const { importPrompts } = usePrompts()
           await importPrompts(jsonData)
           alert('导入成功！')
           setImportFile(null)
