@@ -105,23 +105,38 @@ export const PromptProvider = ({ children }) => {
   }
 
   // 导入提示词数据
-  const importPrompts = async (jsonData) => {
+  const importPrompts = async (jsonData, replaceAll = true) => {
     try {
-      // 清空现有数据
-      for (const prompt of prompts) {
-        await promptAPI.deletePrompt(prompt.id)
+      // 如果选择替换所有，则清空现有数据
+      if (replaceAll) {
+        // 清空现有数据
+        for (const prompt of prompts) {
+          await promptAPI.deletePrompt(prompt.id)
+        }
+        
+        // 导入新数据
+        const importedPrompts = []
+        for (const prompt of jsonData) {
+          const { id, ...promptData } = prompt // 移除旧id
+          const savedPrompt = await promptAPI.createPrompt(promptData)
+          importedPrompts.push(savedPrompt)
+        }
+        
+        setPrompts(importedPrompts)
+        return importedPrompts
+      } else {
+        // 合并模式：保留现有数据，添加新数据
+        const importedPrompts = []
+        for (const prompt of jsonData) {
+          const { id, ...promptData } = prompt // 移除旧id
+          const savedPrompt = await promptAPI.createPrompt(promptData)
+          importedPrompts.push(savedPrompt)
+        }
+        
+        // 更新状态，合并新旧数据
+        setPrompts(prev => [...prev, ...importedPrompts])
+        return importedPrompts
       }
-      
-      // 导入新数据
-      const importedPrompts = []
-      for (const prompt of jsonData) {
-        const { id, ...promptData } = prompt // 移除旧id
-        const savedPrompt = await promptAPI.createPrompt(promptData)
-        importedPrompts.push(savedPrompt)
-      }
-      
-      setPrompts(importedPrompts)
-      return importedPrompts
     } catch (error) {
       console.error('导入提示词失败:', error)
       throw error

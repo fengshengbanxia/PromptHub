@@ -20,6 +20,8 @@ const Home = () => {
   const [isAddingPrompt, setIsAddingPrompt] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [importFile, setImportFile] = useState(null)
+  const [isImporting, setIsImporting] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
   
   const handleAddClick = () => {
     setSelectedPrompt(null)
@@ -41,36 +43,85 @@ const Home = () => {
     const file = e.target.files[0]
     if (file) {
       setImportFile(file)
+      // 显示导入模式选择对话框
+      setShowImportModal(true)
     }
   }
   
-  const handleImportClick = async () => {
+  const handleImportClick = async (replaceAll) => {
     if (!importFile) return
+    
+    setIsImporting(true)
+    setShowImportModal(false)
     
     try {
       const reader = new FileReader()
       reader.onload = async (e) => {
         try {
           const jsonData = JSON.parse(e.target.result)
-          await importPrompts(jsonData)
-          alert('导入成功！')
+          await importPrompts(jsonData, replaceAll)
+          alert(replaceAll ? '导入成功！（替换了所有原有提示词）' : '导入成功！（已添加到原有提示词）')
           setImportFile(null)
           // 重置文件输入框
           document.getElementById('import-file').value = ''
         } catch (error) {
           console.error('解析JSON失败:', error)
           alert('导入失败：无效的JSON格式')
+        } finally {
+          setIsImporting(false)
         }
       }
       reader.readAsText(importFile)
     } catch (error) {
       console.error('导入失败:', error)
       alert('导入失败：' + error.message)
+      setIsImporting(false)
     }
+  }
+  
+  // 关闭导入模式选择对话框
+  const closeImportModal = () => {
+    setShowImportModal(false)
+    setImportFile(null)
+    // 重置文件输入框
+    document.getElementById('import-file').value = ''
   }
   
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* 导入模式选择对话框 */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">选择导入模式</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">
+              您要如何导入 {importFile?.name} 中的提示词？
+            </p>
+            
+            <div className="flex flex-col space-y-3">
+              <button
+                onClick={() => handleImportClick(true)}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                替换所有提示词
+              </button>
+              <button
+                onClick={() => handleImportClick(false)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                添加到现有提示词
+              </button>
+              <button
+                onClick={closeImportModal}
+                className="bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-bold py-2 px-4 rounded"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="flex flex-col md:flex-row gap-8">
         {/* 左侧面板：搜索、标签过滤和提示词列表 */}
         <div className="w-full md:w-1/3 lg:w-1/4">
@@ -118,13 +169,10 @@ const Home = () => {
                         onChange={handleImportChange}
                       />
                     </label>
-                    {importFile && (
-                      <button
-                        onClick={handleImportClick}
-                        className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      >
-                        确认导入: {importFile.name}
-                      </button>
+                    {isImporting && (
+                      <div className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400">
+                        <span className="inline-block animate-spin mr-1">↻</span> 导入中...
+                      </div>
                     )}
                   </div>
                 </div>
